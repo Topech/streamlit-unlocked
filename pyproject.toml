@@ -1,0 +1,10 @@
+[project]
+name = "streamlit-unlocked"
+version = "0.1.0"
+description = "streamlit without the keys and other pesky stuff"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["streamlit>=1.53.0"]
+
+[dependency-groups]
+dev = ["ruff>=0.14.13"]
