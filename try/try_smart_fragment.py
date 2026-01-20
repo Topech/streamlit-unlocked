@@ -1,23 +1,22 @@
 import streamlit as st
 
-from src.auto_key import auto_key
-from src.smart_fragment import smart_fragment
+import src as stu
 
 
-@smart_fragment
+@stu.smart_fragment
 def frag_1():
-    st.button("1", key=auto_key())
+    stu.widgets.button("1")
 
 
-@smart_fragment
+@stu.smart_fragment
 def frag_2():
     frag_1()
     "--"
-    st.button("1", key=auto_key())
-    st.button("2", key=auto_key())
+    stu.widgets.button("1")
+    stu.widgets.button("2")
 
 
-@smart_fragment
+@stu.smart_fragment
 def frag_3():
     frag_2()
     "----"
@@ -25,3 +24,6 @@ def frag_3():
 
 
 frag_3()
+
+
+st.session_state

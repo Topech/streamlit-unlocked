@@ -17,7 +17,8 @@ def _key_stack_to_key(key_stack_: list[str]):
 def auto_key_layer(label: str):
     global key_stack
     try:
-        context_line_no = inspect.currentframe().f_back.f_back.f_back.f_lineno
+        # skip past context manager frames to context manager call
+        context_line_no = inspect.currentframe().f_back.f_back.f_lineno
         key_layer = f"{label}-{context_line_no}"
         key_stack.append(key_layer)
         yield _key_stack_to_key(key_stack)
