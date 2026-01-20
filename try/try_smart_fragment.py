@@ -15,6 +15,8 @@ def frag_2():
     stu.widgets.button("1")
     stu.widgets.button("2")
 
+    st.session_state
+
 
 @stu.smart_fragment
 def frag_3():
@@ -24,6 +26,3 @@ def frag_3():
 
 
 frag_3()
-
-
-st.session_state

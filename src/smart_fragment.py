@@ -1,4 +1,5 @@
 import inspect
+from pathlib import Path
 from typing import Callable, ParamSpec, TypeVar
 
 import streamlit as st
@@ -14,13 +15,20 @@ R = TypeVar("R")
 def smart_fragment(fn: Callable[P, R]) -> Callable[P, R | None]:
     def _decorated_fragment(*args, **kwargs):
         caller_frame = inspect.currentframe().f_back
-        used_in_file = caller_frame.f_code.co_filename
+        raw_used_in_file = caller_frame.f_code.co_filename
+        used_in_file = Path(raw_used_in_file).relative_to(Path.cwd())
         used_at_line_no = caller_frame.f_lineno
 
-        key_layer = f"<{fn.__name__}>{used_in_file}:{used_at_line_no}"
+        raw_declared_in_file = inspect.getmodule(fn).__file__
+        declared_in_file = Path(raw_declared_in_file).relative_to(Path.cwd())
+        declared_at_line_no = fn.__code__.co_firstlineno
+
+        key_layer = f"<{declared_in_file}[{declared_at_line_no}]:{fn.__name__}> @ {used_in_file}[{used_at_line_no}]"
 
         with auto_key_layer(key_layer):
-            output = st.fragment(fn)(*args, **kwargs)
+            # todo: persist key_layer within a fragment after first call (the external key stack isn't recreated - only code in fragment runs)
+            # output = st.fragment(fn)(*args, **kwargs)
+            output = fn(*args, **kwargs)
 
         if output is not None:
             st.session_state[fn.__name__] = output
