@@ -4,7 +4,7 @@ from typing import Callable, ParamSpec, TypeVar
 
 import streamlit as st
 
-from src.auto_key import auto_key_layer
+from src.auto_key import auto_key_layer, get_key, key_stack_is_empty
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -13,7 +13,7 @@ R = TypeVar("R")
 
 
 def smart_fragment(fn: Callable[P, R]) -> Callable[P, R | None]:
-    def _decorated_fragment(*args, **kwargs):
+    def _create_fragment_closure(*args, **kwargs):
         caller_frame = inspect.currentframe().f_back
         raw_used_in_file = caller_frame.f_code.co_filename
         used_in_file = Path(raw_used_in_file).relative_to(Path.cwd())
@@ -25,19 +25,29 @@ def smart_fragment(fn: Callable[P, R]) -> Callable[P, R | None]:
 
         key_layer = f"<{declared_in_file}[{declared_at_line_no}]:{fn.__name__}> @ {used_in_file}[{used_at_line_no}]"
 
-        with auto_key_layer(key_layer):
-            # todo: persist key_layer within a fragment after first call (the external key stack isn't recreated - only code in fragment runs)
-            # output = st.fragment(fn)(*args, **kwargs)
-            output = fn(*args, **kwargs)
+        # NOTE: we get root key layer out of closure to 'persist' it for fragment reruns
+        fragment_root_key_layer = get_key(key_layer)
 
-        if output is not None:
-            st.session_state[fn.__name__] = output
-            # todo: some way to better scope reruns?
-            st.rerun(scope="app")
+        @st.fragment
+        def _fragment_closure(*args, **kwargs):
+            # differentiates if the fragment is running in isolation OR as part of whole app re-run
+            if key_stack_is_empty():
+                # effectively, restore key stack at time of fragment initialisation
+                fragment_key_layer = fragment_root_key_layer
+            else:
+                fragment_key_layer = key_layer
 
-        return output
+            with auto_key_layer(fragment_key_layer):
+                output = fn(*args, **kwargs)
+            # if output is not None:
+            #     st.session_state[fn.__name__] = output
+            #     # todo: some way to better scope reruns?
+            #     st.rerun(scope="app")
+            return output
 
-    return _decorated_fragment
+        return _fragment_closure(*args, **kwargs)
+
+    return _create_fragment_closure
 
 
 # output -> None, only callbacks?

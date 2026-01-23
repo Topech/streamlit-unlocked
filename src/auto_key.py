@@ -9,6 +9,11 @@ R = TypeVar("R")
 key_stack = []
 
 
+def key_stack_is_empty():
+    global key_stack
+    return len(key_stack) == 0
+
+
 def _key_stack_to_key(key_stack_: list[str]):
     return "--".join(key_stack_)
 
@@ -22,6 +27,11 @@ def auto_key_layer(key_layer: str):
         yield _key_stack_to_key(key_stack)
     finally:
         key_stack.pop()
+
+
+def get_key(key: str):
+    global key_stack
+    return _key_stack_to_key([*key_stack, key])
 
 
 def auto_key(key_prefix=None):
@@ -38,7 +48,7 @@ def _auto_key_internal(current_frame: FrameType = None, key_prefix=None):
     key_layer = f"{key_prefix}-{called_at_line_no}"
 
     if len(key_stack) > 0:
-        return _key_stack_to_key([*key_stack, key_layer])
+        return get_key(key_layer)
     else:
         return key_layer
 
