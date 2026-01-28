@@ -4,7 +4,11 @@ from typing import Callable, ParamSpec, TypeVar
 
 import streamlit as st
 
-from src.auto_key import auto_key_layer, get_key, key_stack_is_empty
+from src.auto_key import (
+    auto_key_layer,
+    get_key,
+    key_stack_is_empty,
+)
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -23,7 +27,7 @@ def smart_fragment(fn: Callable[P, R]) -> Callable[P, R | None]:
         declared_in_file = Path(raw_declared_in_file).relative_to(Path.cwd())
         declared_at_line_no = fn.__code__.co_firstlineno
 
-        key_layer = f"<{declared_in_file}[{declared_at_line_no}]:{fn.__name__}> @ {used_in_file}[{used_at_line_no}]"
+        key_layer = f"<{fn.__name__}: {declared_in_file}[{declared_at_line_no}]> @ {used_in_file}[{used_at_line_no}]"
 
         # NOTE: we get root key layer out of closure to 'persist' it for fragment reruns
         fragment_root_key_layer = get_key(key_layer)
@@ -32,18 +36,25 @@ def smart_fragment(fn: Callable[P, R]) -> Callable[P, R | None]:
         def _fragment_closure(*args, **kwargs):
             # differentiates if the fragment is running in isolation OR as part of whole app re-run
             if key_stack_is_empty():
-                # effectively, restore key stack at time of fragment initialisation
+                # TODO: # restore_key_stack_for_smart_fragment(fragment_root_key_layer)
                 fragment_key_layer = fragment_root_key_layer
             else:
                 fragment_key_layer = key_layer
 
-            with auto_key_layer(fragment_key_layer):
+            with auto_key_layer(fragment_key_layer) as generated_fragment_key:
                 output = fn(*args, **kwargs)
-            # if output is not None:
-            #     st.session_state[fn.__name__] = output
-            #     # todo: some way to better scope reruns?
-            #     st.rerun(scope="app")
-            return output
+
+            # this is odd, but the output is returned on re-run, so this is actually getting the output from before the
+            # triggered rerun
+            previous_output = st.session_state.get(generated_fragment_key, None)
+
+            # save the output for next re-run
+            st.session_state[generated_fragment_key] = output
+
+            if output is not None:
+                # todo: some way to better scope reruns?
+                st.rerun(scope="app")
+            return previous_output
 
         return _fragment_closure(*args, **kwargs)
 
