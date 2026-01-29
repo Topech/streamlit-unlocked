@@ -63,12 +63,24 @@ def _auto_key_internal(current_frame: FrameType = None, key_prefix: str = None):
         return key_layer
 
 
-def enable_auto_keyed_widget(widget_fn: Callable[P, R]) -> Callable[P, R]:
+def enable_auto_keyed_widget(
+    widget_fn: Callable[P, R], *, key_args_index: int = None
+) -> Callable[P, R]:
+    """
+    If `key_args_index` is not None, it will also check if the key is at that args index
+    """
+
     def _auto_keyed_widget(*args, **kwargs):
         # gets line number of where auto_keyed widget is called
         caller_frame = inspect.currentframe().f_back
 
-        if len(args) < 2 and "key" not in kwargs.keys():
+        KEY_IN_ARGS = (
+            key_args_index is not None
+            and len(args) >= key_args_index + 1
+            and args[key_args_index] is not None
+        )
+
+        if not KEY_IN_ARGS and "key" not in kwargs.keys():
             kwargs["key"] = _auto_key_internal(
                 current_frame=caller_frame, key_prefix=widget_fn.__name__
             )
