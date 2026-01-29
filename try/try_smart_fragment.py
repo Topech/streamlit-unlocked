@@ -6,37 +6,33 @@ import src as stu
 
 
 @stu.smart_fragment
-def frag_1():
-    st.text(dt.datetime.now())
-    stu.widgets.button("1")
+def frag1() -> bool:
+    "content"
+    st.write(dt.datetime.now().isoformat())
 
 
 @stu.smart_fragment
-def frag_2():
-    frag_1()
-    "--"
-    b2 = stu.widgets.button("2")
-    b3 = stu.widgets.button("unwow")
+def frag2() -> bool:
+    b1 = stu.widgets.button("click me!")
 
-    if b2:
-        return True
-    if b3:
-        return False
+    # Note: you should only return a non-None value if you want to trigger an app rerun
+    if b1:
+        return b1
 
 
 @stu.smart_fragment
-def frag_3():
-    frag_2()
-    "----"
-    f2 = frag_2()
+def frag3() -> bool | None:
+    # you can have multiple of the same fragment!
+    frag1()
+    frag1()
+    frag1()
+    frag1()
+
+    # you can respond to fragment output
+    f2 = frag2()
 
     if f2:
-        "wow!"
+        "wow you clicked that button!"
 
 
-frag_3()
-
-for key, value in sorted(st.session_state.items(), key=lambda x: x[0]):
-    st.code(key)
-    st.code(value)
-    "--"
+frag3()
