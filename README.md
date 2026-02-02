@@ -1,35 +1,45 @@
 # Streamlit Unlocked (stu)
 
-Throw away your keys! With this tool you can say goodbye to ever setting keys on streamlit widgets again.
+Throw away your keys!
+
+With this tool you can say goodbye to setting keys on streamlit widgets.
 (Unless of course you do some funky stuff and break the delicate `auto_key` logic I have made)
 
-This is a wrapper around [Streamlit](https://github.com/streamlit/streamlit). Go ahead and use it the same way, except
-using widgets from `stu`
+This is a wrapper around [Streamlit](https://github.com/streamlit/streamlit).
+Streamlit Unlocked (`stu`) provides widgets that automatically handle keys.
 
-# Warning
+## Warning
 
 NOTE: This is not safe for production. I do not recommend using it anywhere important.
 
 
-# Importing
+## Importing
 ```python
 import streamlit_unlocked as stu
 ```
 
 
-# Features
+## Features
 - `auto_key`: creates a key for you!
-- auto_keyed widgets: all widgets in `stu` will have `auto_key` by default.
-- `smart_fragment`: use fragments like you expect them to work! return values to rerun the app and trigger external changes.
+- auto_keyed widgets: all widgets in `stu` will have `key=auto_key()` by default.
+- `smart_fragment`: use fragments more like normal functions!
 
+### Smart Fragments
+Smart fragments provide:
+- Nested smart fragments 'just work'
+- use return value outside of fragments (they are accessible on next app-wide rerun)
+- configure `on_return_strategy` to trigger app-wide rerun based on return value)
 
-# Examples
+## Examples
 
-## Smart Fragments
+### Nested Smart Fragments
+
+You can use smart fragments to enhance streamlit fragments.
+
 ```python
 import streamlit as st
 
-import src as stu
+import streamlit_unlocked as stu
 
 
 @stu.smart_fragment
@@ -39,11 +49,9 @@ def frag1() -> bool:
 
 @stu.smart_fragment
 def frag2() -> bool:
-    b1 = stu.widgets.button("click me!")
+    t1 = stu.widgets.toggle("click me!")
 
-    # Note: you should only return a non-None value if you want to trigger an app rerun
-    if b1:
-        return b1
+    return t1
 
 
 @stu.smart_fragment
@@ -57,7 +65,10 @@ def frag3() -> bool | None:
     # you can respond to fragment output
     f2 = frag2()
 
-    if f2:
+    # with default smart_fragments, you must trigger a rerun to access fragment return values
+    # (in streamlit, buttons and input will trigger a rerun of an app or current fragment)
+    saved = stu.widgets.button("save")
+    if saved and f2:
         "wow you clicked that button!"
 
 frag3()
