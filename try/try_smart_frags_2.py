@@ -16,8 +16,8 @@ def x():
 
 @smart_fragment(on_return_strategy="no_rerun")
 def y():
-    val = stu.widgets.toggle("a")
-    stu.widgets.toggle("b")
+    val = stu.toggle("a")
+    stu.toggle("b")
 
     return val
 

@@ -11,13 +11,11 @@ def frag1() -> bool:
     st.write(dt.datetime.now().isoformat())
 
 
-@stu.smart_fragment
+@stu.smart_fragment(on_return_strategy="rerun_on_change")
 def frag2() -> bool:
-    b1 = stu.widgets.button("click me!")
+    t1 = stu.toggle("toggle me!")
 
-    # Note: you should only return a non-None value if you want to trigger an app rerun
-    if b1:
-        return b1
+    return t1
 
 
 @stu.smart_fragment
@@ -32,7 +30,7 @@ def frag3() -> bool | None:
     f2 = frag2()
 
     if f2:
-        "wow you clicked that button!"
+        "wow you activated that toggle!"
 
 
 frag3()
