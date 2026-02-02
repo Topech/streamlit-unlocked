@@ -1,16 +1,15 @@
 import streamlit as st
 
-from src.smart_fragment import smart_fragment
-from src.widgets import button
+import streamlit_unlocked as stu
 
 
-@smart_fragment
+@stu.smart_fragment
 def my_smart_frag():
-    hello_btn = button.button("hello")
+    hello_btn = stu.button("hello")
 
     if hello_btn:
-        button.button("there")
-        button.pills("pills", options=["a", "b", "c"])
+        stu.button("there")
+        stu.pills("pills", options=["a", "b", "c"])
 
 
 my_smart_frag()

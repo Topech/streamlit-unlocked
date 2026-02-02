@@ -1,6 +1,6 @@
 import streamlit as st
 
-from src.auto_key import enable_auto_keyed_widget
+from streamlit_unlocked.auto_key import enable_auto_keyed_widget
 
 button = enable_auto_keyed_widget(st.button, key_args_index=1)
 link_button = st.link_button  # note: doesn't have key parameter

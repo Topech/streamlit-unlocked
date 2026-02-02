@@ -4,7 +4,7 @@ from typing import Callable, Literal, ParamSpec, TypeAlias, TypeVar, Union
 
 import streamlit as st
 
-from src import auto_key
+from src.streamlit_unlocked import auto_key
 
 P = ParamSpec("P")
 R = TypeVar("R")

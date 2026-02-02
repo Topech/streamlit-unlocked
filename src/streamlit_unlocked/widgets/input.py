@@ -1,6 +1,6 @@
 import streamlit as st
 
-from src.auto_key import enable_auto_keyed_widget
+from streamlit_unlocked.auto_key import enable_auto_keyed_widget
 
 audio_input = enable_auto_keyed_widget(st.audio_input)
 camera_input = enable_auto_keyed_widget(st.camera_input)

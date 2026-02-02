@@ -2,8 +2,8 @@ import datetime as dt
 
 import streamlit as st
 
-import src as stu
-from src import smart_fragment
+import streamlit_unlocked as stu
+from streamlit_unlocked import smart_fragment
 
 
 @smart_fragment

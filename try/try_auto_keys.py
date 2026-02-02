@@ -1,7 +1,7 @@
 import streamlit as st
 
-import src as stu
-from src.auto_key import auto_key_layer
+import streamlit_unlocked as stu
+from streamlit_unlocked.auto_key import auto_key_layer
 
 
 def reusable_1():

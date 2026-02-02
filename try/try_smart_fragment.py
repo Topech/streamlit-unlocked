@@ -2,7 +2,7 @@ import datetime as dt
 
 import streamlit as st
 
-import src as stu
+import streamlit_unlocked as stu
 
 
 @stu.smart_fragment

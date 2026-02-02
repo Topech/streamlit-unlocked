@@ -7,7 +7,13 @@ requires-python = ">=3.13"
 dependencies = ["streamlit>=1.53.0"]
 
 [dependency-groups]
-dev = [
-    "ruff>=0.14.13",
-    "watchdog>=6.0.0",
-]
+dev = ["ruff>=0.14.13", "watchdog>=6.0.0"]
+
+[tool.uv]
+package=true
+
+[build-system]
+# NOTE: uv_build follows uv version number, which is a custom standard.
+# REF: https://docs.astral.sh/uv/reference/policies/versioning/
+requires = ["uv_build>=0.9.2,<0.10.0"]
+build-backend = "uv_build"

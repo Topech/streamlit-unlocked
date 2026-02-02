@@ -1,4 +1,4 @@
-import src as stu  # STreamlit-Unlocked
+import streamlit_unlocked as stu
 
 
 @stu.smart_fragment
